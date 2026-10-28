@@ -1,4 +1,4 @@
-# Director Workshop OCI · 0.7
+# Director Workshop OCI
 
 Template funcional de **11 archivos**, sin carpeta de tests ni credenciales.
 Cada proceso ejecuta un Director para un equipo. El servidor de carrera,
@@ -192,77 +192,6 @@ detiene para evitar que ambos reconecten en bucle.
 
 Para detener el Director, presiona **Ctrl+C** en la terminal donde se ejecuta.
 
-## 4. Publica en OCIR
-
-Esta sección es opcional para quienes desplieguen con contenedores. Los comandos
-requieren que la imagen `techweek26-director:0.7` ya exista localmente.
-El repositorio del organizador utiliza el tag `0.7`:
-
-```bash
-docker tag techweek26-director:0.7 ord.ocir.io/idajmumkp9ca/techweek26-director:0.7
-docker login ord.ocir.io
-docker push ord.ocir.io/idajmumkp9ca/techweek26-director:0.7
-```
-
-> **Namespace del tenant:** `idajmumkp9ca` es el namespace de Object Storage del
-> tenant del organizador y forma parte de la ruta del repositorio en OCIR.
-> Para publicar en tu propio tenant, reemplázalo en los comandos `docker tag`
-> y `docker push` por tu namespace.
->
-> Para consultarlo en la consola de OCI, abre el menú de perfil en la esquina
-> superior derecha y haz clic en `Tenancy: <nombre-tenant>`. En la página
-> **Tenancy details**, busca **Object Storage Settings** y copia el valor de
-> **Object Storage Namespace**. Consulta la
-> [documentación de namespaces de Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/understandingnamespaces.htm).
-
-Para imágenes personalizadas de participantes usa tu repositorio/tag asignado;
-no sobrescribas el tag compartido del organizador.
-
-## 5. Despliega en OCI Hosted Deployments
-
-Selecciona la imagen de OCIR y configura las variables anteriores en la aplicación.
-Usa **una aplicación por equipo, con mínimo=1 y máximo=1 réplicas**, sin múltiples
-workers. No hace falta almacenamiento administrado ni volúmenes. Configura también
-autenticación entrante y conectividad de salida hacia carrera y OCI Generative AI.
-Una IP privada local requiere una ruta desde OCI, por ejemplo VCN y VPN.
-
-No definas variables reservadas como PORT, K_SERVICE, K_CONFIGURATION, K_REVISION,
-OCI_RESOURCE_PRINCIPAL_* o KUBERNETES_*. Este template sólo usa API key para inferencia.
-El deployment real debe validarse en tu tenancy, incluida la actividad del Director
-durante periodos sin peticiones HTTP entrantes y los reemplazos de instancia.
-
-La etiqueta de imagen de esta entrega es `0.7`. El campo `version` de `/status`
-y el título interno de FastAPI conservan el valor `0.4` del código incluido.
-
-## Tiempo de decisión y respaldo
-
-Se conserva un presupuesto de **6.5 s para auxiliares + LLM** en las ventanas de
-carrera, con margen adicional antes del límite enviado por el servidor. Si hay
-timeout, error de OCI o JSON inválido, se registra el motivo y se mantiene el
-ritmo/energía vigentes y la parada programada. Para pre-carrera y Momentos existe
-una respuesta mínima válida. No se incluye el motor completo de estrategias por
-reglas ni el modo azar de las versiones anteriores.
-
-Si falta configuración obligatoria, la aplicación no arranca. El estado y los logs
-no muestran tokens, claves ni excepciones completas que puedan contenerlos.
-
-Los logs del logger `director` incluyen eventos JSON en una sola línea:
-
-- `LLM_RESPUESTA`: contenido devuelto por el modelo antes de validar el JSON,
-  modelo utilizado y duración de la consulta en segundos.
-- `SERVIDOR_RESPUESTA_ENVIADA`: respuesta final después de completar el envío
-  WebSocket, con fuente `llm` o `respaldo`. Confirma el envío, no la aceptación
-  del servidor.
-- `SERVIDOR_RESPUESTA_NO_ENVIADA`: no había conexión disponible para enviarla.
-
-Los eventos de una misma solicitud comparten `correlacion`, `equipo`, tipo de
-`solicitud`, `ventana`, `vuelta` e ID de `momento`, cuando corresponden. También se
-registra el texto del modelo si no contiene JSON válido; en un timeout sin
-respuesta no existe un evento `LLM_RESPUESTA`. Los valores de las credenciales
-configuradas y los campos sensibles se ocultan en estos eventos. Consulta la
-salida directamente en la terminal donde ejecutaste Uvicorn.
-
 Referencias:
 [Responses API](https://docs.oracle.com/en-us/iaas/Content/generative-ai/responses-api.htm),
-[contenedores OCI](https://docs.oracle.com/en-us/iaas/Content/generative-ai/prepare-artifacts.htm),
 [API keys](https://docs.oracle.com/en-us/iaas/Content/generative-ai/api-keys.htm).

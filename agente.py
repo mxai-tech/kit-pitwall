@@ -1,4 +1,8 @@
-"""Director del workshop: personalidad, configuración, cliente OCI y conexión a carrera."""
+"""Director del workshop: OCI Responses API, personalidad y conexión a carrera.
+
+Reemplazo de agente.py del developer kit mxai-tech/kit-pitwall.
+Conserva las variables y el contrato de estrategia.py del kit.
+"""
 import asyncio
 import copy
 import json
@@ -94,7 +98,7 @@ def validar_entorno():
 
 # 3. Consulta OCI con API key.
 class ModeloOCI:
-    """Única conexión LLM: OCI Generative AI por API key y Chat Completions."""
+    """Única conexión LLM: OCI Generative AI por API key y Responses API."""
     def __init__(self):
         self.nombre = os.getenv("OCI_GENAI_MODEL", "openai.gpt-oss-20b")
         region = os.getenv("OCI_GENAI_REGION", "us-chicago-1")
@@ -105,13 +109,20 @@ class ModeloOCI:
 
     async def consultar(self, sistema, usuario):
         inicio = time.monotonic()
-        r = await self.cliente.chat.completions.create(
+        r = await self.cliente.responses.create(
             model=self.nombre,
-            messages=[{"role": "system", "content": sistema}, {"role": "user", "content": usuario}],
+            instructions=sistema,
+            input=usuario,
+            max_output_tokens=2048,
+            store=False,
         )
-        texto = r.choices[0].message.content or ""
-        registrar("LLM_RESPUESTA", modelo=self.nombre, respuesta=texto,
+        texto = r.output_text or ""
+        registrar("LLM_RESPUESTA", modelo=self.nombre, respuesta=texto, estado=r.status,
                   duracion_s=round(time.monotonic() - inicio, 3))
+        # Nunca ejecutar un JSON parcial, aunque se pueda decodificar.
+        # Agente._responder() activa el respaldo si esta consulta falla.
+        if r.status != "completed":
+            raise ValueError("La respuesta del modelo no se completó")
         decoder = json.JSONDecoder()
         for inicio, caracter in enumerate(texto):
             if caracter == "{":

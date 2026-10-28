@@ -1,6 +1,6 @@
 # Director Workshop OCI
 
-Template funcional de **9 archivos**, sin carpeta de tests ni credenciales.
+Template funcional de **8 archivos**, sin carpeta de tests ni credenciales.
 Cada proceso ejecuta un Director para un equipo. El servidor de carrera,
 los tres auxiliares, la UI y el torneo continúan juntos en el servidor original.
 
@@ -9,7 +9,6 @@ los tres auxiliares, la UI y el torneo continúan juntos en el servidor original
 | Archivo | Responsabilidad |
 |---|---|
 | `01_apikeys.py` | Primer ejercicio: una pregunta a Enterprise AI con API key y Responses API |
-| `datos/Formula1_2025Season_Drivers.txt` | Datos de muestra opcionales del workshop |
 | `estrategia.py` | Prompt editable, validación de órdenes y respaldo mínimo |
 | `agente.py` | Ficha, variables de entorno, cliente OCI, auxiliares y conexión a carrera |
 | `main.py` | Arranque y endpoints HTTP de alojamiento |

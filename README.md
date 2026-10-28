@@ -82,7 +82,9 @@ El ejemplo es un archivo de aprendizaje independiente del proceso del Director.
 
 ## 1. Diseña tu Director
 
-Edita `FICHA` al inicio de `agente.py`: ingeniero, piloto ficticio, número, estilo,
+Edita `FICHA` al inicio de `agente.py`: 
+- ingeniero
+- piloto ficticio, número, estilo,
 riesgo, relación con estrategia, regla de oro y frase de radio. El número debe
 estar entre 1 y 99, salvo 3 y 6. Opcionalmente puedes inyectar el objeto completo
 mediante `DIRECTOR_FICHA_JSON` antes de iniciar el proceso.

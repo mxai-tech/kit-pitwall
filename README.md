@@ -224,6 +224,12 @@ Desde esta carpeta, con Docker y Buildx disponibles:
 docker buildx build --platform linux/amd64 --load -t techweek26-director:0.7 .
 ```
 
+> **OCI Cloud Shell:** selecciona la arquitectura **X86_64** antes de construir
+> la imagen, para trabajar con la plataforma `linux/amd64` que utiliza este
+> workshop. En Cloud Shell, abre **Actions > Architecture**, elige **X86_64**
+> y confirma el reinicio de la sesión. Consulta la
+> [documentación de arquitectura de Cloud Shell](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/cloudshellintro.htm#Cloud_Shell_Architecture).
+
 Si Docker de Rancher Desktop no está en PATH en macOS:
 
 ```bash
@@ -281,6 +287,17 @@ docker tag techweek26-director:0.7 ord.ocir.io/idajmumkp9ca/techweek26-director:
 docker login ord.ocir.io
 docker push ord.ocir.io/idajmumkp9ca/techweek26-director:0.7
 ```
+
+> **Namespace del tenant:** `idajmumkp9ca` es el namespace de Object Storage del
+> tenant del organizador y forma parte de la ruta del repositorio en OCIR.
+> Para publicar en tu propio tenant, reemplázalo en los comandos `docker tag`
+> y `docker push` por tu namespace.
+>
+> Para consultarlo en la consola de OCI, abre el menú de perfil en la esquina
+> superior derecha y haz clic en `Tenancy: <nombre-tenant>`. En la página
+> **Tenancy details**, busca **Object Storage Settings** y copia el valor de
+> **Object Storage Namespace**. Consulta la
+> [documentación de namespaces de Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/understandingnamespaces.htm).
 
 Para imágenes personalizadas de participantes usa tu repositorio/tag asignado;
 no sobrescribas el tag compartido del organizador.

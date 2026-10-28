@@ -1,8 +1,7 @@
 # Director Workshop OCI
 
-Template funcional de **8 archivos**, sin carpeta de tests ni credenciales.
 Cada proceso ejecuta un Director para un equipo. El servidor de carrera,
-los tres auxiliares, la UI y el torneo continúan juntos en el servidor original.
+los tres auxiliares, la UI y el torneo continúan juntos en el servidor.
 
 ## Archivos
 
@@ -14,7 +13,6 @@ los tres auxiliares, la UI y el torneo continúan juntos en el servidor original
 | `main.py` | Arranque y endpoints HTTP de alojamiento |
 | `requirements.txt` | Cinco dependencias directas, sin SDK de Claude ni YAML |
 | `.env.example` | Plantilla pública de variables de ejecución |
-| `.gitignore` | Excluye credenciales y archivos locales |
 | `README.md` | Instrucciones del workshop |
 
 ## 0. Tu primera llamada a Enterprise AI con API key

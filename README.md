@@ -49,10 +49,11 @@ export OCI_GENAI_API_KEY='REEMPLAZAR_API_KEY_DE_OCI_GENERATIVE_AI'
 export OCI_GENAI_PROJECT_ID='ocid1.generativeaiproject.REEMPLAZAR'
 ```
 
-El ejemplo utiliza las mismas variables `OCI_GENAI_*` del Director, pero las toma
-del entorno de la terminal: **no carga `.env` automáticamente**. Para este primer
+El ejemplo comparte las variables de región, modelo y API key con el Director,
+y además requiere `OCI_GENAI_PROJECT_ID`. Las toma del entorno de la terminal:
+**no carga `.env` automáticamente**. Para este primer
 ejercicio usamos `openai.gpt-oss-120b`; más adelante, el `.env.example` del Director
-propone `openai.gpt-oss-20b` para Chat Completions. El modelo debe estar habilitado
+propone `openai.gpt-oss-20b` para Responses API. El modelo debe estar habilitado
 para tu proyecto, región y API. No compartas tu clave ni la escribas en el código.
 
 Ejecuta la pregunta incluida y luego prueba con una propia:
@@ -201,15 +202,20 @@ SERVIDOR=ws://IP_DEL_SERVIDOR:8000
 OCI_GENAI_REGION=us-chicago-1
 OCI_GENAI_MODEL=openai.gpt-oss-20b
 OCI_GENAI_API_KEY=MI_API_KEY_DE_OCI_GENERATIVE_AI
-OCI_GENAI_PROJECT_ID=OCID_DE_MI_PROYECTO_GENERATIVE_AI
 ```
 
-Usa un modelo disponible en tu región que soporte Chat Completions de OCI.
+Usa un modelo disponible en tu región que soporte Responses API de OCI.
 La API key debe ser de **OCI Generative AI**, de la misma región, y tener los
 permisos correspondientes. No es una API key de OpenAI ni una clave privada IAM.
 El código construye internamente el endpoint regional de OCI; no hay variable
 para sustituirlo por un servicio externo o local. El modelo se ejecuta en OCI;
 no se descarga en el contenedor.
+
+El Director usa la URL base
+`https://inference.generativeai.<region>.oci.oraclecloud.com/20231130/actions/v1`
+y no requiere `OCI_GENAI_PROJECT_ID`. Los ejercicios introductorios
+`01_apikeys.py` y `02_vectorStore.py` conservan el endpoint `/openai/v1` y su
+configuración de proyecto, descrita en sus respectivas secciones.
 
 Estas variables **sustituyen** `LLM_PROVEEDOR`, `DIRECTOR_POLITICA` y las variables
 `OPENAI_*` de la versión 0.2. No se aceptan como configuración del nuevo template.

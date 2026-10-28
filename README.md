@@ -1,7 +1,7 @@
 # Director Workshop OCI · 0.7
 
-Template funcional de **12 archivos**, sin carpeta de tests ni credenciales.
-Cada contenedor ejecuta un Director para un equipo. El servidor de carrera,
+Template funcional de **11 archivos**, sin carpeta de tests ni credenciales.
+Cada proceso ejecuta un Director para un equipo. El servidor de carrera,
 los tres auxiliares, la UI y el torneo continúan juntos en el servidor original.
 
 ## Archivos
@@ -9,8 +9,7 @@ los tres auxiliares, la UI y el torneo continúan juntos en el servidor original
 | Archivo | Responsabilidad |
 |---|---|
 | `01_apikeys.py` | Primer ejercicio: una pregunta a Enterprise AI con API key y Responses API |
-| `02_vectorStore.py` | Segundo ejercicio: cargar documentos, indexarlos y buscar con API key |
-| `datos/Formula1_2025Season_Drivers.txt` | Datos de muestra ya preparados para cargar y buscar |
+| `datos/Formula1_2025Season_Drivers.txt` | Datos de muestra opcionales del workshop |
 | `estrategia.py` | Prompt editable, validación de órdenes y respaldo mínimo |
 | `agente.py` | Ficha, variables de entorno, cliente OCI, auxiliares y conexión a carrera |
 | `main.py` | Arranque y endpoints HTTP de alojamiento |
@@ -79,97 +78,20 @@ Observa los elementos principales de `01_apikeys.py`:
 | `input` | Contiene la pregunta o instrucción del participante |
 | `response.output_text` | Obtiene el texto generado |
 
-Aunque se importa `OpenAI`, la inferencia ocurre en OCI. Este ejercicio utiliza
-`client.responses.create()`. El Director actual utiliza
-`client.chat.completions.create()` y exige una respuesta JSON con órdenes de
-carrera. Son dos interfaces diferentes; este ejercicio no cambia la del Director.
+Aunque se importa `OpenAI`, la inferencia ocurre en OCI. Tanto este ejercicio
+como el Director utilizan `client.responses.create()`. El ejercicio imprime
+texto libre y usa un proyecto; el Director exige una respuesta JSON con órdenes
+de carrera y utiliza el endpoint de inferencia sin proyecto.
 
-Cuando obtengas una respuesta, continúa con el segundo ejercicio. Los dos ejemplos
-son archivos locales de aprendizaje: no se incluyen en la imagen Docker del agente.
-
-## 0.1. Busca documentos con un vector store
-
-`02_vectorStore.py` muestra el siguiente paso: subir un documento, obtener su
-`file_id`, asociarlo a un vector store y recuperar fragmentos mediante una consulta.
-Utiliza **API key** y el SDK ya instalado; no requiere IAM, wallet ni dependencias
-adicionales. Tampoco conecta al servidor de carrera ni modifica al Director.
-
-Conserva `OCI_GENAI_API_KEY`, `OCI_GENAI_PROJECT_ID` y `OCI_GENAI_REGION` del primer
-ejercicio. El organizador debe proporcionar un **vector store existente para datos
-no estructurados**, accesible desde ese proyecto en la misma región. Configúralo:
-
-```bash
-export OCI_GENAI_VECTOR_STORE_ID='REEMPLAZAR_ID_DEL_VECTOR_STORE'
-```
-
-Esta variable sólo la utiliza el segundo ejemplo. `OCI_GENAI_MODEL` no se utiliza:
-la búsqueda devuelve fragmentos y no llama a un modelo para redactar una respuesta.
-La API key necesita permisos para subir archivos, asociarlos y consultar el store.
-
-El ejemplo reutiliza un store existente: no crea uno nuevo ni consume otro cupo de
-vector stores del tenant. El identificador suele tener formato `vs_...`; debe ser el
-ID real asignado por OCI, sin inventarlo ni reemplazarlo por el nombre del recurso.
-
-### Carga, indexación y búsqueda
-
-Desde la raíz de esta carpeta, con el entorno Python del primer ejercicio activo:
-
-```bash
-python 02_vectorStore.py datos/Formula1_2025Season_Drivers.txt
-```
-
-El archivo de muestra ya está preparado en TXT con los 21 registros, columnas y
-valores del CSV proporcionado. El script lo sube directamente, sin transformar su
-contenido. Los valores no se verifican contra datos externos. Para otros archivos,
-prepara previamente un formato que OCI admita; la indexación directa de CSV fue
-rechazada por el servicio durante la validación del workshop.
-
-El programa muestra:
-
-1. El `file_id` devuelto al subir el TXT.
-2. El `vector_store_id` utilizado.
-3. El estado de indexación, hasta `completed`.
-4. Los fragmentos recuperados, su archivo de origen y `score` de relevancia.
-
-La pregunta predeterminada es `Which team does Lando Norris drive for?`. En el
-documento de muestra, el fragmento correspondiente contiene `Team: McLaren`.
-El texto y orden de resultados pueden variar; el score no representa una
-probabilidad de que la información sea verdadera.
-
-### Reutiliza el archivo y cambia la pregunta
-
-Cada ejecución con una ruta sube un archivo nuevo. Para hacer más consultas sin
-duplicar cargas, copia el `file_id` que imprimió el programa y reutilízalo:
-
-```bash
-python 02_vectorStore.py --file-id 'REEMPLAZAR_FILE_ID' \
-  --pregunta 'Which team does Charles Leclerc drive for?'
-```
-
-No necesitas escribir un `file_id` antes de la primera carga: OCI lo genera.
-`file_ids` sería una lista de IDs obtenidos al subir varios documentos, para
-asociarlos mediante la API de lotes; este ejercicio comienza con un solo archivo.
-Para un TXT o PDF propio puedes pasar su ruta directamente.
-Su procesamiento queda sujeto a los formatos y límites que admita OCI.
-
-La espera de indexación es de hasta 180 segundos. Si termina antes de completarse,
-el script imprime el ID para continuar con `--file-id`; opcionalmente aumenta la
-espera con `--espera 300`. Las solicitudes individuales tienen timeout de 30 s.
-No se busca hasta que el archivo esté en estado `completed`.
-
-Los recursos quedan en OCI después de ejecutar el ejemplo; el script no borra
-documentos ni modifica la expiración del store. Si el store contiene otros
-documentos, también pueden aparecer entre los resultados: revisa `file_id` y
-nombre del archivo. Coordina la limpieza o expiración con el organizador.
-
-Después de completar ambos ejercicios, continúa con la personalización del Director.
+Cuando obtengas una respuesta, continúa con la personalización del Director.
+El ejemplo es un archivo de aprendizaje y no se incluye en la imagen Docker.
 
 ## 1. Diseña tu Director
 
 Edita `FICHA` al inicio de `agente.py`: ingeniero, piloto ficticio, número, estilo,
 riesgo, relación con estrategia, regla de oro y frase de radio. El número debe
 estar entre 1 y 99, salvo 3 y 6. Opcionalmente puedes inyectar el objeto completo
-mediante `DIRECTOR_FICHA_JSON` sin reconstruir la imagen.
+mediante `DIRECTOR_FICHA_JSON` antes de iniciar el proceso.
 
 El archivo `agente.py` está organizado en cuatro pasos para recorrerlo durante el
 workshop: personalidad (`FICHA`), validación (`validar_entorno()`), llamada al modelo
@@ -188,20 +110,16 @@ destino de inferencia.
 
 ## 2. Configura tus variables
 
+Configura las variables en la misma terminal donde iniciarás el Director.
+Reemplaza los valores de ejemplo por los datos proporcionados por el organizador:
+
 ```bash
-cp .env.example .env
-chmod 600 .env
-```
-
-Completa `.env` con los datos proporcionados por el organizador:
-
-```dotenv
-EQUIPO=MI_EQUIPO
-TOKEN=MI_TOKEN
-SERVIDOR=ws://IP_DEL_SERVIDOR:8000
-OCI_GENAI_REGION=us-chicago-1
-OCI_GENAI_MODEL=openai.gpt-oss-20b
-OCI_GENAI_API_KEY=MI_API_KEY_DE_OCI_GENERATIVE_AI
+export EQUIPO=MI_EQUIPO
+export TOKEN='MI_TOKEN'
+export SERVIDOR='ws://IP_DEL_SERVIDOR:8000'
+export OCI_GENAI_REGION=us-chicago-1
+export OCI_GENAI_MODEL=openai.gpt-oss-20b
+export OCI_GENAI_API_KEY='MI_API_KEY_DE_OCI_GENERATIVE_AI'
 ```
 
 Usa un modelo disponible en tu región que soporte Responses API de OCI.
@@ -213,46 +131,41 @@ no se descarga en el contenedor.
 
 El Director usa la URL base
 `https://inference.generativeai.<region>.oci.oraclecloud.com/20231130/actions/v1`
-y no requiere `OCI_GENAI_PROJECT_ID`. Los ejercicios introductorios
-`01_apikeys.py` y `02_vectorStore.py` conservan el endpoint `/openai/v1` y su
-configuración de proyecto, descrita en sus respectivas secciones.
+y no requiere `OCI_GENAI_PROJECT_ID`. El ejemplo introductorio `01_apikeys.py`
+conserva el endpoint `/openai/v1` y su configuración de proyecto, descrita en
+la sección 0.
 
 Estas variables **sustituyen** `LLM_PROVEEDOR`, `DIRECTOR_POLITICA` y las variables
 `OPENAI_*` de la versión 0.2. No se aceptan como configuración del nuevo template.
-No se carga `.env` desde Python: Docker u OCI deben inyectar las variables.
-Mantén `.env` fuera del material que compartas con los participantes.
+Python no carga `.env` automáticamente: para ejecutar localmente, utiliza los
+comandos `export` anteriores. `.env.example` sigue disponible como referencia
+para despliegues que inyecten las variables mediante Docker u OCI. Mantén tus
+credenciales fuera del repositorio y del material compartido.
 
-## 3. Construye tu imagen
+## 3. Ejecuta localmente
 
-Desde esta carpeta, con Docker y Buildx disponibles:
-
-```bash
-docker buildx build --platform linux/amd64 --load -t techweek26-director:0.7 .
-```
-
-> **OCI Cloud Shell:** selecciona la arquitectura **X86_64** antes de construir
-> la imagen, para trabajar con la plataforma `linux/amd64` que utiliza este
-> workshop. En Cloud Shell, abre **Actions > Architecture**, elige **X86_64**
-> y confirma el reinicio de la sesión. Consulta la
-> [documentación de arquitectura de Cloud Shell](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/cloudshellintro.htm#Cloud_Shell_Architecture).
-
-Si Docker de Rancher Desktop no está en PATH en macOS:
+Desde la raíz del repositorio, crea o activa el entorno Python e instala las
+dependencias. Si ya completaste el ejercicio 0, puedes reutilizar ese entorno:
 
 ```bash
-export PATH="$HOME/.rd/bin:$PATH"
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
-## 4. Ejecuta localmente
+Con las variables del paso 2 configuradas en esta misma terminal, inicia el
+Director sin Docker:
 
 ```bash
-docker run -d --name director-workshop \
-  --platform linux/amd64 --read-only \
-  --tmpfs /tmp:rw,nosuid,nodev,size=64m,mode=1777 \
-  --env-file .env -p 127.0.0.1:8080:8080 \
-  techweek26-director:0.7
-
-docker logs -f director-workshop
+python -m uvicorn main:app \
+  --host 127.0.0.1 \
+  --port 8080 \
+  --workers 1 \
+  --no-access-log
 ```
+
+Los logs aparecen en la terminal. El mensaje `Director conectado y autenticado`
+confirma que la conexión con el Servidor de Carrera se estableció correctamente.
 
 En otra terminal:
 
@@ -277,15 +190,12 @@ Sólo puede haber un Director conectado por equipo. Detén el bot o contenedor
 anterior antes de conectar el tuyo. Si otro toma el control, la instancia se
 detiene para evitar que ambos reconecten en bucle.
 
-Para detener y eliminar tu contenedor local:
+Para detener el Director, presiona **Ctrl+C** en la terminal donde se ejecuta.
 
-```bash
-docker stop --timeout 30 director-workshop
-docker rm director-workshop
-```
+## 4. Publica en OCIR
 
-## 5. Publica en OCIR
-
+Esta sección es opcional para quienes desplieguen con contenedores. Los comandos
+requieren que la imagen `techweek26-director:0.7` ya exista localmente.
 El repositorio del organizador utiliza el tag `0.7`:
 
 ```bash
@@ -308,7 +218,7 @@ docker push ord.ocir.io/idajmumkp9ca/techweek26-director:0.7
 Para imágenes personalizadas de participantes usa tu repositorio/tag asignado;
 no sobrescribas el tag compartido del organizador.
 
-## 6. Despliega en OCI Hosted Deployments
+## 5. Despliega en OCI Hosted Deployments
 
 Selecciona la imagen de OCIR y configura las variables anteriores en la aplicación.
 Usa **una aplicación por equipo, con mínimo=1 y máximo=1 réplicas**, sin múltiples
@@ -350,12 +260,9 @@ Los eventos de una misma solicitud comparten `correlacion`, `equipo`, tipo de
 registra el texto del modelo si no contiene JSON válido; en un timeout sin
 respuesta no existe un evento `LLM_RESPUESTA`. Los valores de las credenciales
 configuradas y los campos sensibles se ocultan en estos eventos. Consulta la
-salida con `docker logs -f director-workshop`.
+salida directamente en la terminal donde ejecutaste Uvicorn.
 
 Referencias:
 [Responses API](https://docs.oracle.com/en-us/iaas/Content/generative-ai/responses-api.htm),
-[Files API](https://docs.oracle.com/en-us/iaas/Content/generative-ai/files.htm),
-[Vector Store Files](https://docs.oracle.com/en-us/iaas/Content/generative-ai/vector-store-files.htm),
 [contenedores OCI](https://docs.oracle.com/en-us/iaas/Content/generative-ai/prepare-artifacts.htm),
-[API keys](https://docs.oracle.com/en-us/iaas/Content/generative-ai/api-keys.htm),
-[Chat Completions](https://docs.oracle.com/en-us/iaas/Content/generative-ai/chat-completions-api.htm).
+[API keys](https://docs.oracle.com/en-us/iaas/Content/generative-ai/api-keys.htm).

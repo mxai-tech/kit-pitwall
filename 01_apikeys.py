@@ -3,6 +3,9 @@ import argparse
 import os
 import re
 import sys
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from openai import APIConnectionError, APIStatusError, APITimeoutError, OpenAI
 

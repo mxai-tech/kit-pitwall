@@ -17,6 +17,9 @@ from urllib.parse import urlencode, urlsplit
 import httpx
 import websockets
 from openai import AsyncOpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from estrategia import prompt, respaldo, validar
 

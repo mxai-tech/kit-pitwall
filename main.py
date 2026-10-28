@@ -7,6 +7,9 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 
 from agente import Agente
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 @asynccontextmanager

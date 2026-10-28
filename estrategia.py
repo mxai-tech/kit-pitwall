@@ -8,12 +8,7 @@ COMPUESTOS = ("BLANDO", "MEDIO", "DURO", "INTER", "LLUVIA")
 # PERSONALIZA tu estrategia aquí: objetivos, prioridades y tolerancia al riesgo.
 INSTRUCCIONES = """Eres el ingeniero de estrategia de un equipo en una carrera simulada.
 Decide con la telemetría y los informes de llantas, pista y estrategia.
-Compara tiempo esperado y riesgo; respeta la personalidad y regla de oro del equipo.
-ATAQUE gana tiempo y desgasta más; CONSERVAR cuida llantas pero es más lento.
-BOOST consume 12% de batería por vuelta; RECARGA recupera batería y es más lenta.
-Con menos de 12% de batería evita BOOST. Evita superar el acantilado de llantas.
-Pits cuesta 22 s o 11 s bajo Safety Car. En seco usa dos compuestos distintos.
-No confundas el pronóstico con certeza. Responde exclusivamente con un objeto JSON.
+Responde exclusivamente con un objeto JSON.
 Radio: máximo 20 palabras. Razonamiento: breve explicación, sin texto fuera del JSON.
 """
 

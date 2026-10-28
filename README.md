@@ -39,7 +39,7 @@ Configura las variables en esa misma terminal, reemplazando los valores de ejemp
 ```bash
 export OCI_GENAI_REGION=us-chicago-1
 export OCI_GENAI_MODEL=openai.gpt-oss-20b
-export OCI_GENAI_API_KEY='REEMPLAZAR_API_KEY_DE_OCI_GENERATIVE_AI'
+export OCI_GENAI_API_KEY='sk-v7KQXikQvtwzYfOtY3nfV5FYubuns1ZPjwuzgXUzDCc3Vaw0'
 ```
 
 El ejemplo comparte las variables de región, modelo y API key con el Director.
@@ -118,10 +118,10 @@ Reemplaza los valores de ejemplo por los datos proporcionados por el organizador
 ```bash
 export EQUIPO=MI_EQUIPO
 export TOKEN='MI_TOKEN'
-export SERVIDOR='ws://IP_DEL_SERVIDOR:8000'
+export SERVIDOR='ws://170.9.255.121:8000/'
 export OCI_GENAI_REGION=us-chicago-1
 export OCI_GENAI_MODEL=openai.gpt-oss-20b
-export OCI_GENAI_API_KEY='MI_API_KEY_DE_OCI_GENERATIVE_AI'
+export OCI_GENAI_API_KEY='sk-v7KQXikQvtwzYfOtY3nfV5FYubuns1ZPjwuzgXUzDCc3Vaw0'
 ```
 
 Usa un modelo disponible en tu región que soporte Responses API de OCI.

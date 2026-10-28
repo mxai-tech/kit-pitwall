@@ -1,6 +1,6 @@
 # Director Workshop OCI
 
-Template funcional de **11 archivos**, sin carpeta de tests ni credenciales.
+Template funcional de **9 archivos**, sin carpeta de tests ni credenciales.
 Cada proceso ejecuta un Director para un equipo. El servidor de carrera,
 los tres auxiliares, la UI y el torneo continúan juntos en el servidor original.
 
@@ -14,9 +14,7 @@ los tres auxiliares, la UI y el torneo continúan juntos en el servidor original
 | `agente.py` | Ficha, variables de entorno, cliente OCI, auxiliares y conexión a carrera |
 | `main.py` | Arranque y endpoints HTTP de alojamiento |
 | `requirements.txt` | Cinco dependencias directas, sin SDK de Claude ni YAML |
-| `Dockerfile` | Python 3.11, usuario no root y un worker en 0.0.0.0:8080 |
 | `.env.example` | Plantilla pública de variables de ejecución |
-| `.dockerignore` | Sólo permite los tres módulos del Director y dependencias en la imagen |
 | `.gitignore` | Excluye credenciales y archivos locales |
 | `README.md` | Instrucciones del workshop |
 
@@ -24,7 +22,7 @@ los tres auxiliares, la UI y el torneo continúan juntos en el servidor original
 
 Antes de construir tu Director, ejecuta `01_apikeys.py` para comprobar tu acceso al
 modelo. Este ejercicio es independiente: no requiere equipo, token, servidor de
-carrera ni Docker. Sólo envía una pregunta a OCI e imprime la respuesta.
+carrera. Sólo envía una pregunta a OCI e imprime la respuesta.
 
 Necesitas Python 3.11 o posterior, acceso a Internet y los siguientes datos del
 organizador: una API key de **OCI Generative AI**, el OCID del proyecto y un modelo
@@ -84,7 +82,7 @@ texto libre y usa un proyecto; el Director exige una respuesta JSON con órdenes
 de carrera y utiliza el endpoint de inferencia sin proyecto.
 
 Cuando obtengas una respuesta, continúa con la personalización del Director.
-El ejemplo es un archivo de aprendizaje y no se incluye en la imagen Docker.
+El ejemplo es un archivo de aprendizaje independiente del proceso del Director.
 
 ## 1. Diseña tu Director
 
@@ -127,7 +125,7 @@ La API key debe ser de **OCI Generative AI**, de la misma región, y tener los
 permisos correspondientes. No es una API key de OpenAI ni una clave privada IAM.
 El código construye internamente el endpoint regional de OCI; no hay variable
 para sustituirlo por un servicio externo o local. El modelo se ejecuta en OCI;
-no se descarga en el contenedor.
+no se descarga en tu equipo.
 
 El Director usa la URL base
 `https://inference.generativeai.<region>.oci.oraclecloud.com/20231130/actions/v1`
@@ -138,9 +136,9 @@ la sección 0.
 Estas variables **sustituyen** `LLM_PROVEEDOR`, `DIRECTOR_POLITICA` y las variables
 `OPENAI_*` de la versión 0.2. No se aceptan como configuración del nuevo template.
 Python no carga `.env` automáticamente: para ejecutar localmente, utiliza los
-comandos `export` anteriores. `.env.example` sigue disponible como referencia
-para despliegues que inyecten las variables mediante Docker u OCI. Mantén tus
-credenciales fuera del repositorio y del material compartido.
+comandos `export` anteriores. `.env.example` sirve como referencia de las
+variables disponibles. Mantén tus credenciales fuera del repositorio y del
+material compartido.
 
 ## 3. Ejecuta localmente
 
@@ -154,7 +152,7 @@ python -m pip install -r requirements.txt
 ```
 
 Con las variables del paso 2 configuradas en esta misma terminal, inicia el
-Director sin Docker:
+Director:
 
 ```bash
 python -m uvicorn main:app \
@@ -186,8 +184,8 @@ token. Recibe pre-carrera, ventanas y Momentos; consulta los auxiliares en
 `http(s)://SERVIDOR/api/agentes/{nombre}` y devuelve órdenes por el mismo WebSocket.
 No requiere que el servidor llame al puerto 8080 del Director.
 
-Sólo puede haber un Director conectado por equipo. Detén el bot o contenedor
-anterior antes de conectar el tuyo. Si otro toma el control, la instancia se
+Sólo puede haber un Director conectado por equipo. Detén el proceso anterior
+antes de conectar el tuyo. Si otro toma el control, la instancia se
 detiene para evitar que ambos reconecten en bucle.
 
 Para detener el Director, presiona **Ctrl+C** en la terminal donde se ejecuta.

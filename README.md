@@ -104,7 +104,7 @@ token y servidor del entorno, y `ModeloOCI()` lee las variables de OCI. La funci
 `validar_entorno()` conserva las validaciones y carga la ficha opcional de
 `DIRECTOR_FICHA_JSON`. Las variables que configura el participante no cambian.
 
-Edita `INSTRUCCIONES` en `estrategia.py` para definir cómo compara las lecturas de
+**Edita** `INSTRUCCIONES` en `estrategia.py` para definir cómo compara las lecturas de
 llantas, pista y estrategia. No elimines los formatos de mensajes ni su validación.
 No hay políticas seleccionables ni proveedores alternativos: siempre se consulta
 un modelo de OCI. El SDK OpenAI sólo se usa como cliente compatible, no como

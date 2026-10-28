@@ -12,21 +12,17 @@ def main():
     parser.add_argument("pregunta", nargs="?",
                         default="Explica en español qué hace el muro de estrategia de un equipo de Fórmula 1.")
     args = parser.parse_args()
-    for nombre in ("OCI_GENAI_API_KEY", "OCI_GENAI_PROJECT_ID"):
-        if not os.getenv(nombre, "").strip():
-            raise ValueError(f"Configura la variable {nombre} antes de ejecutar el ejemplo.")
+    if not os.getenv("OCI_GENAI_API_KEY", "").strip():
+        raise ValueError("Configura la variable OCI_GENAI_API_KEY antes de ejecutar el ejemplo.")
     region = os.getenv("OCI_GENAI_REGION", "us-chicago-1")
     modelo = os.getenv("OCI_GENAI_MODEL", "openai.gpt-oss-120b")
     if not re.fullmatch(r"[a-z]{2}-[a-z0-9]+-[0-9]+", region):
         raise ValueError("OCI_GENAI_REGION debe ser una región OCI válida, por ejemplo us-chicago-1.")
-    if not os.environ["OCI_GENAI_PROJECT_ID"].startswith("ocid1.generativeaiproject."):
-        raise ValueError("OCI_GENAI_PROJECT_ID debe contener el OCID de un proyecto Generative AI.")
 
     # El SDK es de OpenAI, pero endpoint, credenciales y ejecución pertenecen a OCI.
     with OpenAI(
-        base_url=f"https://inference.generativeai.{region}.oci.oraclecloud.com/openai/v1",
+        base_url=f"https://inference.generativeai.{region}.oci.oraclecloud.com/20231130/actions/v1",
         api_key=os.environ["OCI_GENAI_API_KEY"],
-        project=os.environ["OCI_GENAI_PROJECT_ID"],
         timeout=60,
         max_retries=0,
     ) as client:
@@ -47,4 +43,4 @@ if __name__ == "__main__":
         sys.exit("No fue posible conectar con OCI. Revisa la red y la región.")
     except APIStatusError as exc:
         # No imprimir la excepción completa: puede contener datos de la petición.
-        sys.exit(f"OCI respondió HTTP {exc.status_code}. Revisa permisos, proyecto y compatibilidad del modelo.")
+        sys.exit(f"OCI respondió HTTP {exc.status_code}. Revisa permisos, región y compatibilidad del modelo.")

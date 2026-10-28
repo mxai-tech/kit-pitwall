@@ -20,11 +20,11 @@ los tres auxiliares, la UI y el torneo continúan juntos en el servidor original
 ## 0. Tu primera llamada a Enterprise AI con API key
 
 Antes de construir tu Director, ejecuta `01_apikeys.py` para comprobar tu acceso al
-modelo. Este ejercicio es independiente: no requiere equipo, token, servidor de
-carrera. Sólo envía una pregunta a OCI e imprime la respuesta.
+modelo. Este ejercicio es independiente: no requiere equipo, token ni servidor
+de carrera. Sólo envía una pregunta a OCI e imprime la respuesta.
 
 Necesitas Python 3.11 o posterior, acceso a Internet y los siguientes datos del
-organizador: una API key de **OCI Generative AI**, el OCID del proyecto y un modelo
+organizador: una API key de **OCI Generative AI** y un modelo
 compatible con **Responses API** en la región elegida. La clave no es una API key
 de OpenAI ni una clave privada IAM.
 
@@ -40,17 +40,17 @@ Configura las variables en esa misma terminal, reemplazando los valores de ejemp
 
 ```bash
 export OCI_GENAI_REGION=us-chicago-1
-export OCI_GENAI_MODEL=openai.gpt-oss-120b
+export OCI_GENAI_MODEL=openai.gpt-oss-20b
 export OCI_GENAI_API_KEY='REEMPLAZAR_API_KEY_DE_OCI_GENERATIVE_AI'
-export OCI_GENAI_PROJECT_ID='ocid1.generativeaiproject.REEMPLAZAR'
 ```
 
-El ejemplo comparte las variables de región, modelo y API key con el Director,
-y además requiere `OCI_GENAI_PROJECT_ID`. Las toma del entorno de la terminal:
-**no carga `.env` automáticamente**. Para este primer
-ejercicio usamos `openai.gpt-oss-120b`; más adelante, el `.env.example` del Director
-propone `openai.gpt-oss-20b` para Responses API. El modelo debe estar habilitado
-para tu proyecto, región y API. No compartas tu clave ni la escribas en el código.
+El ejemplo comparte las variables de región, modelo y API key con el Director.
+Ambos utilizan el endpoint de inferencia con API key y **no requieren un Project ID**.
+Las variables se leen del entorno de la terminal: **no carga `.env` automáticamente**.
+Estos comandos seleccionan `openai.gpt-oss-20b`, el mismo modelo del Director.
+Si no defines `OCI_GENAI_MODEL`, el script utiliza `openai.gpt-oss-120b`.
+El modelo debe estar disponible en tu región y ser compatible con Responses API.
+No compartas tu clave ni la escribas en el código.
 
 Ejecuta la pregunta incluida y luego prueba con una propia:
 
@@ -62,7 +62,7 @@ python 01_apikeys.py "¿Cómo influye el desgaste de llantas en la estrategia de
 La salida esperada es una explicación en texto generada por el modelo; su contenido
 puede variar entre ejecuciones. Un error termina con código distinto de cero y un
 mensaje breve. HTTP 401/403 orienta a revisar credenciales y permisos; 400/404, a
-revisar proyecto, región y modelo; 429, a revisar límites o capacidad del servicio.
+revisar región y modelo; 429, a revisar límites o capacidad del servicio.
 
 Observa los elementos principales de `01_apikeys.py`:
 
@@ -70,15 +70,14 @@ Observa los elementos principales de `01_apikeys.py`:
 |---|---|
 | `base_url` | Dirige la llamada al endpoint regional de OCI |
 | `api_key` | Autentica la solicitud con tu API key de OCI Generative AI |
-| `project` | Identifica el proyecto Generative AI de la solicitud |
 | `model` | Selecciona el modelo que responderá |
 | `input` | Contiene la pregunta o instrucción del participante |
 | `response.output_text` | Obtiene el texto generado |
 
 Aunque se importa `OpenAI`, la inferencia ocurre en OCI. Tanto este ejercicio
 como el Director utilizan `client.responses.create()`. El ejercicio imprime
-texto libre y usa un proyecto; el Director exige una respuesta JSON con órdenes
-de carrera y utiliza el endpoint de inferencia sin proyecto.
+texto libre; el Director exige una respuesta JSON con órdenes de carrera.
+Los dos utilizan el endpoint de inferencia sin proyecto.
 
 Cuando obtengas una respuesta, continúa con la personalización del Director.
 El ejemplo es un archivo de aprendizaje independiente del proceso del Director.
@@ -129,8 +128,7 @@ no se descarga en tu equipo.
 El Director usa la URL base
 `https://inference.generativeai.<region>.oci.oraclecloud.com/20231130/actions/v1`
 y no requiere `OCI_GENAI_PROJECT_ID`. El ejemplo introductorio `01_apikeys.py`
-conserva el endpoint `/openai/v1` y su configuración de proyecto, descrita en
-la sección 0.
+utiliza la misma URL base y tampoco necesita un proyecto.
 
 Estas variables **sustituyen** `LLM_PROVEEDOR`, `DIRECTOR_POLITICA` y las variables
 `OPENAI_*` de la versión 0.2. No se aceptan como configuración del nuevo template.
